@@ -4,19 +4,19 @@
 #!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/TestFlight_00.png
 #!homepage=https://github.com/fmz200/wool_scripts
 #!category=定时任务
-#!date=2026-11-22 21:50:00
+#!date=2026-11-22 22:08:00
 
 # 使用步骤：
 # 1. 先填应用 ID：在 Surge 持久化数据（或 BoxJS）里加一条：key 填 fmz200_TF_APP_ID，value 填要加入的 TF 应用 ID（join 链接 https://testflight.apple.com/join/ 后面的那串字符），多个用英文逗号隔开，如 LPQmtkUs,Hgun65jg。
 # 2. 两个定时任务默认都开着：自动加入每 3 分钟跑一次，监控每 1 分钟跑一次。不用哪个就去 Surge 脚本列表里关掉对应的脚本。
-# 3. 自动加入需要先抓到账号令牌（令牌存在持久化数据 fmz200_TF_header 里）。抓令牌方法：去 Surge 的 MITM 设置里确认已开启 HTTP/2 解密，再把 testflight.apple.com 临时加进 MITM 主机名，打开 TestFlight App 逛一下，收到“获取成功”通知就说明令牌已存好，然后把 testflight.apple.com 从 MITM 主机名里删掉（留着它 TestFlight 会打不开）。
+# 3. 自动加入需要先抓到账号令牌（令牌存在持久化数据 fmz200_TF_header 里）。抓令牌方法：去 Surge 的 MITM 设置里确认已开启 HTTP/2 解密，再把 testflight.apple.com 临时加进 MITM 主机名，然后重启 VPN、重开 TestFlight App，下拉刷新一次，收到“令牌获取成功”通知就说明令牌已存好，然后把 testflight.apple.com 从 MITM 主机名里删掉（留着它 TestFlight 会打不开）。
 # 注意：监控任务不需要令牌、不用 MITM 也能跑。
 
 [Rule]
 DOMAIN-SUFFIX,testflight.apple.com,Proxy
 
 [Script]
-获取账号令牌 = type=http-request, pattern=^https?:\/\/testflight\.apple\.com\/v3\/accounts\/.*\/apps$, script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/TestFlight/AutoJoinTFKeys.js, requires-body=false, timeout=60
+获取账号令牌 = type=http-request, pattern=^https?:\/\/testflight\.apple\.com\/v3\/accounts\/.*\/apps, script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/TestFlight/AutoJoinTFKeys.js, requires-body=false, timeout=60
 应用ID捕获 = type=http-request, pattern=^https?:\/\/testflight\.apple\.com\/join\/(.*), script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/TestFlight/AutoJoinTFKeys.js, requires-body=false, timeout=60
 自动加入TF = type=cron, cronexp=*/3 * * * *, script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/TestFlight/AutoJoinTF.js, wake-system=1, timeout=600
 监控TF位置 = type=cron, cronexp=* * * * *, script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/TestFlight/AutoMonitorTF.js, wake-system=1, timeout=30
